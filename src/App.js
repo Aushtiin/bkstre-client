@@ -1,24 +1,39 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useReducer, useState } from 'react';
+import './index.css';
+import BookList from './components/BookList';
+import AddBook from './components/AddBook';
+import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
 
-function App() {
+const client = new ApolloClient({
+  uri: "http://localhost:3030/graphql",
+  cache: new InMemoryCache()
+});
+
+
+
+const App = () => {
+  const [text, setText] = useReducer(
+    (state, newState) => ({...state, ...newState}),
+    {
+    bookName: '',
+    genre: '',
+    authorId: '',
+    },
+  );
+  const [ selected, setSelected] = useState(null)
+  
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ApolloProvider client={client}>
+      <div className="main">
+        <header className="App-header">
+          <h1>Reading List</h1>
+        </header>
+        <BookList selected={selected} setSelected={setSelected} />
+        <AddBook setText={setText} bookName={text.bookName} genre={text.genre} authorId={text.authorId} />
+      </div>
+    </ApolloProvider>
   );
 }
 
